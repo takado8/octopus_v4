@@ -5,9 +5,9 @@ from builder.building_spot_validator import BuildingSpotValidator
 
 
 class PylonBuilder:
-    def __init__(self, ai):
+    def __init__(self, ai, building_spot_validator: BuildingSpotValidator):
         self.ai = ai
-        self.transport_area_validator: BuildingSpotValidator = BuildingSpotValidator.INSTANCE
+        self.transport_area_validator: BuildingSpotValidator = building_spot_validator
         self.main_base_z = self.ai.get_terrain_z_height(self.ai.mineral_field.closest_to(self.ai.start_location))
         self.natural_z = self.ai.get_terrain_z_height(self.ai.main_base_ramp.bottom_center.towards(
             self.ai.main_base_ramp.top_center, -1))

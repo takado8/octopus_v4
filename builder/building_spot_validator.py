@@ -1,11 +1,8 @@
 class BuildingSpotValidator:
-    INSTANCE = None
-
     def __init__(self, ai):
         self.ai = ai
         # linear function coefficients for build spot validation
         self.validation_coefficients = {}
-        BuildingSpotValidator.INSTANCE = self
 
     def is_valid_location(self, x, y, expansion_location):
         """

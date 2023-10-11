@@ -8,9 +8,9 @@ from builder.validation_level_enum import Validation
 
 
 class Builder:
-    def __init__(self, ai):
+    def __init__(self, ai, building_spot_validator: BuildingSpotValidator):
         self.ai = ai
-        self.transport_area_validator = BuildingSpotValidator.INSTANCE
+        self.transport_area_validator: BuildingSpotValidator = building_spot_validator
 
     async def build(
             self,
