@@ -1,0 +1,22 @@
+from sc2.unit import UnitTypeId as unit
+
+STRUCTURES_RADIUS = {
+    unit.PYLON: 1.125,
+    unit.GATEWAY: 1.8125,
+    unit.WARPGATE: 1.8125,
+    unit.ASSIMILATOR: 1.6875,
+    unit.FORGE: 1.8125,
+    unit.CYBERNETICSCORE: 1.8125,
+    unit.NEXUS: 2.75,
+    unit.PHOTONCANNON: 1.125,
+    unit.ROBOTICSFACILITY: 1.8125,
+    unit.STARGATE: 1.8125,
+    unit.TWILIGHTCOUNCIL: 1.8125,
+    unit.ROBOTICSBAY: 1.8125,
+    unit.FLEETBEACON: 1.8125,
+    unit.TEMPLARARCHIVE: 1.8125,
+    unit.DARKSHRINE: 1.5,
+    unit.SHIELDBATTERY: 1.125,
+}
+
+STRUCTURE_MAX_RADIUS = 1.8125

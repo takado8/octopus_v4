@@ -1,10 +1,13 @@
 from sc2.ids.unit_typeid import UnitTypeId as unit
 import math
 
+from builder.building_spot_validator import BuildingSpotValidator
+
 
 class PylonBuilder:
     def __init__(self, ai):
         self.ai = ai
+        self.transport_area_validator: BuildingSpotValidator = BuildingSpotValidator.INSTANCE
         self.main_base_z = self.ai.get_terrain_z_height(self.ai.mineral_field.closest_to(self.ai.start_location))
         self.natural_z = self.ai.get_terrain_z_height(self.ai.main_base_ramp.bottom_center.towards(
             self.ai.main_base_ramp.top_center, -1))
@@ -19,8 +22,10 @@ class PylonBuilder:
                 if distance > 45:
                     return False
                 position = self.ai.start_location.position.random_on_distance(distance)
-                is_in_bounds = self.ai.in_map_bounds(position)
-                if not is_in_bounds:
+                if not self.ai.in_map_bounds(position):
+                    continue
+                closest_expansion = min(self.ai.expansion_locations_list, key=lambda x: x.distance_to(position))
+                if not self.transport_area_validator.is_valid_location(position.x, position.y, closest_expansion):
                     continue
                 if self.is_on_main_base_lvl(position):
                     if pylons.closer_than(7, position).exists:
