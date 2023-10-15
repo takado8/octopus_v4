@@ -20,16 +20,12 @@ class Builder:
         self.natural_z = self.ai.get_terrain_z_height(self.ai.main_base_ramp.bottom_center.towards(
             self.ai.main_base_ramp.top_center, -1))
 
-    async def build(
-            self,
-            building: UnitTypeId,
-            near: Union[Unit, Point2],
-            max_distance: int = 20,
-            build_worker: Optional[Unit] = None,
-            random_alternative: bool = True,
-            placement_step: int = 2,
-            validation: Validation = Validation.PLACEMENT_STEP
-    ) -> bool:
+    async def build(self,
+                    building: UnitTypeId,
+                    near: Union[Unit, Point2],
+                    build_worker: Optional[Unit] = None,
+                    validation: Validation = Validation.PLACEMENT_STEP
+                    ) -> bool:
         if not self.ai.can_afford(building):
             return False
 
@@ -80,7 +76,7 @@ class Builder:
     def get_pylon_with_least_neighbours(self, in_main_base=True):
         if in_main_base:
             pylons = self.ai.structures.filter(lambda x: x.type_id == UnitTypeId.PYLON and x.is_ready and
-                                                           self.is_on_main_base_lvl(x.position))
+                                                         self.is_on_main_base_lvl(x.position))
         else:
             pylons = self.ai.structures.filter(lambda x: x.type_id == UnitTypeId.PYLON and x.is_ready)
         if pylons:
