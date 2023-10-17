@@ -5,4 +5,4 @@ class CreationTimeSimulator:
 
     def get_unit_creation_time(self, unit_type_id):
         unit_type_data = self.ai._game_data.units[unit_type_id.value]
-        return int(round(unit_type_data.cost.time / 22.4))
+        return round(unit_type_data.cost.time / 22.4)
