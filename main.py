@@ -39,11 +39,8 @@ def run(real_time=0):
 
 
 if __name__ == '__main__':
-    # for i in range(20):
-    #     print(f'\n\ni: {i}\n\n')
-    #     try:
-    #         run()
-    #     except:
-    #         pass
-    income = IncomeStatistics(None)
-    income.plot_data(income.read_dict_from_file('eval_data.json'))
+
+    run(1)
+
+    # income = IncomeStatistics(None)
+    # income.plot_data(income.read_dict_from_file('eval_data.json'))

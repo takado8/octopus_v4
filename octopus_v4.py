@@ -22,12 +22,6 @@ class OctopusV4(BotAI):
 
     async def on_step(self, iteration: int):
         await self.strategy.execute()
-        self.income_stats.log()
-        if self.time > 420:
-            income_eval = self.income_stats.eval_income_per_worker()
-            print(income_eval)
-            self.income_stats.write_dict_to_file('eval_data.json', income_eval)
-            raise ValueError
 
     async def build(
         self,
