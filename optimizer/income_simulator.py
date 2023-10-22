@@ -1,12 +1,19 @@
-MINERALS_INCOME_AT_WORKER_COUNT = {12: 600,
-                                   13: 740,
-                                   14: 795,
-                                   15: 845,
-                                   16: 900,
-                                   17: 950,
-                                   18: 975}
+MINERALS_INCOME_AT_WORKER_COUNT = {
+    6: 300,
+    7: 350,
+    8: 400,
+    9: 450,
+    10: 500,
+    11: 550,
+    12: 600,
+    13: 740,
+    14: 795,
+    15: 845,
+    16: 900,
+    17: 950,
+    18: 975}
 
-GAS_INCOME_AT_WORKER_COUNT = {1: 60, 2: 125, 3: 160}
+GAS_INCOME_AT_WORKER_COUNT = {0: 0, 1: 60, 2: 125, 3: 160, 6: 320}
 
 
 class IncomeSimulator:
@@ -35,8 +42,8 @@ class IncomeSimulator:
         self.spent_minerals += minerals_amount
 
     def subtract_spent_gas(self, gas_amount):
-        self.spent_minerals += gas_amount
+        self.spent_gas += gas_amount
 
     def get_unit_cost(self, unit_type_id):
         unit_type_data = self.ai._game_data.units[unit_type_id.value]
-        return unit_type_data.cost[0], unit_type_data.cost[1]
+        return unit_type_data.cost.minerals, unit_type_data.cost.vespene
