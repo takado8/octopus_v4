@@ -9,7 +9,8 @@ class Gate(Strategy):
         self.pylons_out = False
 
     async def execute(self):
-        await self.ai.distribute_workers()
+        self.probe_scouting.scout()
+        await self.handle_workers()
         if self.ai.workers.amount < 11 + 1 * self.ai.time/60:
             if self.ai.townhalls.idle.exists:
                 self.ai.train(unit_id.PROBE)
