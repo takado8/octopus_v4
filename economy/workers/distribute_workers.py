@@ -40,7 +40,7 @@ class DistributeWorkers:
                 target = None
                 if target_tag in self.gas_dict:
                     try:
-                        target = self.ai.structures().by_tag(target_tag)
+                        target = self.ai.structures.by_tag(target_tag)
                         if not target.has_vespene:
                             self.remove_dead_gas(target_tag)
                     except KeyError:
@@ -103,7 +103,7 @@ class DistributeWorkers:
         for j in range(1, 4):
             for gas_tag in self.gas_dict:
                 while len(self.gas_dict[gas_tag]) < j and workers:
-                    gas = self.ai.structures().by_tag(gas_tag)
+                    gas = self.ai.structures.by_tag(gas_tag)
                     closest_worker = workers.closest_to(gas)
                     self.gas_dict[gas_tag].append(closest_worker.tag)
                     workers.remove(closest_worker)
@@ -138,7 +138,7 @@ class DistributeWorkers:
         gas_to_remove = []
         for gas_tag in self.gas_dict:
             try:
-                gas = self.ai.structures().by_tag(gas_tag)
+                gas = self.ai.structures.by_tag(gas_tag)
                 if not self.ai.townhalls.ready.closer_than(12, gas).exists:
                     gas_to_remove.append(gas_tag)
             except KeyError:

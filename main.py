@@ -1,12 +1,14 @@
 import random
 from sc2 import maps
+from sc2.unit import Unit
 from sc2.data import Race, AIBuild, Difficulty, Result
 from sc2.main import run_game
 from sc2.player import Bot, Computer
-from test_bots.terran_stalker_defense import TerranStalkerDefense
+# from test_bots.terran_stalker_defense import TerranStalkerDefense
 
 from economy.income_statistics import IncomeStatistics
 from octopus_v4 import OctopusV4
+from tests.bots.worker_rush import WorkerRushBot
 
 
 def run(real_time=0):
@@ -15,8 +17,7 @@ def run(real_time=0):
     else:
         real_time = False
 
-    maps_list = ["AncientCisternAIE", "DragonScalesAIE", "GoldenauraAIE", "InfestationStationAIE", "RoyalBloodAIE",
-                 "GresvanAIE"]
+    maps_list = ["GoldenAura513AIE"]
     races = [Race.Protoss, Race.Zerg, Race.Terran]
     computer_builds = [AIBuild.Rush]
     # computer_builds = [AIBuild.Timing, AIBuild.Rush, AIBuild.Power, AIBuild.Macro]
@@ -33,14 +34,16 @@ def run(real_time=0):
     a_map = random.choice(maps_list)
     result = run_game(map_settings=maps.get(a_map), players=[
         Bot(race=Race.Protoss, ai=OctopusV4(), name='Octopus'),
-        Bot(race=Race.Terran, ai=TerranStalkerDefense(), name='TerranStalkerDefense')
-        # Computer(race=races[1], difficulty=Difficulty.VeryEasy, ai_build=build)
+        # Bot(race=Race.Protoss, ai=OctopusV4(), name='Octopus'),
+        Bot(race=Race.Terran, ai=WorkerRushBot(), name='TerranStalkerDefense')
+        # Computer(race=races[0], difficulty=Difficulty.VeryEasy, ai_build=build)
     ], realtime=real_time)
 
 
 if __name__ == '__main__':
-
-    run(1)
-
+    try:
+        run(real_time=1)
+    except Exception as e:
+        print(e)
     # income = IncomeStatistics(None)
     # income.plot_data(income.read_dict_from_file('eval_data.json'))

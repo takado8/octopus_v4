@@ -5,6 +5,8 @@ from economy.workers.distribute_workers import DistributeWorkers
 from economy.workers.speed_mining import SpeedMining
 from opening.opening_service import OpeningService
 from opening.openings.opening import Opening
+from scouting.enemy_economy import EnemyEconomy
+from scouting.hallucination_scout import Scouting
 from scouting.probe_scouting import ProbeScouting
 
 
@@ -19,12 +21,17 @@ class Strategy:
         self.workers_distribution = DistributeWorkers(ai)
         self.speed_mining = SpeedMining(ai)
         self.probe_scouting = ProbeScouting(ai)
+        self.enemy_economy = EnemyEconomy(ai)
+        self.scouting = Scouting(ai, self.enemy_economy)
 
     async def execute(self):
         raise NotImplementedError()
 
     async def handle_workers(self):
-        mineral_workers_tags = self.workers_distribution.get_mineral_workers_tags()
+        # mineral_workers_tags = self.workers_distribution.get_mineral_workers_tags()
         scouting_probe_tag = self.probe_scouting.scout_tag
         self.workers_distribution.distribute_workers(excluded_tags={scouting_probe_tag})
-        self.speed_mining.execute(mineral_workers_tags)
+        # self.speed_mining.execute(mineral_workers_tags)
+
+    async def scout_midgame(self):
+        await self.scouting.scan_middle_game(direction='DOWN-RIGHT')

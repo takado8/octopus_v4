@@ -1,0 +1,9 @@
+from sc2.ids.unit_typeid import UnitTypeId as UnitId
+
+
+WORKERS_IDS = {UnitId.PROBE, UnitId.DRONE, UnitId.SCV, UnitId.MULE}
+BASES_IDS = {UnitId.NEXUS, UnitId.COMMANDCENTER, UnitId.COMMANDCENTERFLYING, UnitId.ORBITALCOMMAND,
+             UnitId.ORBITALCOMMANDFLYING,
+             UnitId.PLANETARYFORTRESS, UnitId.HIVE, UnitId.HATCHERY, UnitId.LAIR}
+
+OWN_ARMY_IDS = {UnitId.ZEALOT, UnitId.STALKER, UnitId.SENTRY}
