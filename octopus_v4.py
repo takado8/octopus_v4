@@ -5,7 +5,6 @@ from sc2.ids.unit_typeid import UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
 
-from game_data.visual import Visual
 from strategy.gate import Gate
 from strategy.strategy import Strategy
 from utils.constants import BASES_IDS, OWN_ARMY_IDS, WORKERS_IDS
@@ -22,13 +21,11 @@ class OctopusV4(BotAI):
 
     async def on_start(self):
         self.strategy = Gate(self)
-        self.visual = Visual(self)
 
     async def on_step(self, iteration: int):
         self.iteration = iteration
         self.army = self.units.filter(lambda u: u.type_id in OWN_ARMY_IDS)
         await self.strategy.execute()
-        self.visual.render(self.units + self.structures, self.enemy_units + self.enemy_structures)
 
 
     # async def build(

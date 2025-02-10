@@ -7,16 +7,16 @@ from sc2.position import Point2
 
 
 class Visual:
-    def __init__(self, ai: BotAI):
+    def __init__(self, ai: BotAI, magnification=1):
         print('map size: ' + str(ai.game_info.map_size))
         self.map_size = ai.game_info.map_size
         self.ai = ai
-        self.magnification = 6
+        self.magnification = magnification
         self.game_map = self.initialize_map()
         self.shade_path = deque(maxlen=12)
 
 
-    def render(self, units, enemy_units, scout=None):
+    def render(self, units, enemy_units, scout=None, show=True):
         game_map = self.game_map.copy()
         if not scout:
             scout = units.furthest_to(self.ai.start_location)
@@ -46,9 +46,10 @@ class Visual:
         # flip horizontally to make our final fix in visual representation:
         flipped = cv2.flip(game_map,0)
         # resized = cv2.resize(flipped,dsize=None,fx=4,fy=4)
-
-        cv2.imshow('Visual',flipped)
-        cv2.waitKey(1)
+        if show:
+            cv2.imshow('Visual', flipped)
+            cv2.waitKey(1)
+        return flipped
 
     def initialize_map(self):
         game_map = np.zeros((self.map_size[1] * self.magnification, self.map_size[0] * self.magnification, 3), np.uint8)

@@ -42,7 +42,7 @@ def run(real_time=0):
 
 if __name__ == '__main__':
     try:
-        run(real_time=1)
+        run(real_time=0)
     except Exception as e:
         print(e)
     # income = IncomeStatistics(None)
