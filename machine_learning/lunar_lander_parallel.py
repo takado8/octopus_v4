@@ -10,23 +10,23 @@ from queue import Queue
 from collections import defaultdict
 
 import gymnasium as gym
-from machine_learning.lunar_lander import DDPGAgent
+from machine_learning.ddpg import DDPGAgent, NOISE_ORNSTEIN
 from utils.plotit import LivePlotter
 
 
 # Global parameters
 NUM_WORKERS = 150  # Number of worker threads (each with its own environment)
-NUM_EPISODES = 300  # Number of episodes per worker
-MAX_STEPS = 500  # Maximum steps per episode
+NUM_EPISODES = 400  # Number of episodes per worker
+MAX_STEPS = 300  # Maximum steps per episode
 
 # Create a global agent
-agent = DDPGAgent(state_dim=8, action_dim=2, batch=64)
+agent = DDPGAgent(state_dim=8, action_dim=2, noise_type=NOISE_ORNSTEIN)
 print(f'{agent.actor.summary()}')
 print(f'{agent.critic.summary()}')
 
 # agent.load_weights('weights/Lunar-multi-008-w.29')
 
-name = "Lunar-multi-010"
+name = "Lunar-multi-011"
 scores = defaultdict(list)
 
 
@@ -83,15 +83,14 @@ def worker_thread(worker_id, num_episodes):
     """Worker thread: runs its own environment and collects experiences."""
     env = gym.make("LunarLanderContinuous-v3")
     unique_counter = 0
-    # max_reward = -99999999999
 
     for ep in range(num_episodes):
         state, info = env.reset()
         total_reward = 0
 
         for _ in range(MAX_STEPS):
-            noise = 0.45 * (num_episodes - ep) / num_episodes + 0.05
-            if len(agent.memory) < 10_000:
+            noise = 0.35 * (num_episodes - ep) / num_episodes + 0.05
+            if len(agent.memory) < 15_000:
                 action = np.random.normal(0, 2, size=2)
             else:
                 request_id = f"{worker_id}_{unique_counter}"
@@ -108,10 +107,7 @@ def worker_thread(worker_id, num_episodes):
         print(f"Worker {worker_id} Episode {ep} Reward: {total_reward}")
         scores[ep].append(total_reward)
 
-        # if total_reward > max_reward and ep > 20:
-        #     max_reward = total_reward
     agent.save_weights(f"weights/{name}-w.{worker_id}")
-
     env.close()
 
 

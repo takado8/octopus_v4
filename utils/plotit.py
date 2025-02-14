@@ -33,19 +33,9 @@ class LivePlotter:
         plt.pause(0.1)
 
     def save_plot(self, filename):
-        # Save the current plot as an image
-        self.ax.clear()
-        self.ax.plot(self.xs, self.ys, label="Training Progress")
-        self.ax.set_title(self.title)
-        self.ax.set_xlabel(self.xlabel)
-        self.ax.set_ylabel(self.ylabel)
-        self.ax.legend()
-        # Draw a horizontal line at y = 0 (baseline)
-        self.ax.axhline(y=0, color='black', linestyle='--', label="Baseline (y=0)")
 
-        # Add grid to the plot
-        self.ax.grid(True)
         plt.savefig(filename)
+
 
 # Example Usage
 # live_plotter = LivePlotter()
