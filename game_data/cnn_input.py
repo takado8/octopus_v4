@@ -2,10 +2,35 @@ import json
 
 import cv2
 import numpy as np
+from sc2.position import Point2
+
 
 class SC2InputGenerator:
-    def __init__(self, input_size):
+    def __init__(self, input_size, ai):
         self.input_size = input_size  # (H, W) window size
+        self.ai = ai
+        self.full_map_template = self.generate_full_map_template()
+
+    def generate_full_map_template(self):
+        """
+        Generates a template of the map where:
+        - 1 represents a movable terrain tile.
+        - 0 represents an unmovable terrain tile.
+        """
+        map_size = self.ai.game_info.map_size
+        width, height = map_size
+
+        # Initialize map template with zeros
+        self.full_map_template = [[0 for _ in range(height)] for _ in range(width)]
+
+        # Iterate through all points and check if they are in the pathing grid
+        for x in range(width):
+            for y in range(height):
+                if self.ai.in_pathing_grid(Point2((x, y))):
+                    self.full_map_template[x][y] = 1
+
+        return self.full_map_template
+
 
     def world_to_grid(self, x, y, relative_center, world_scale=1.0):
         """
@@ -37,12 +62,44 @@ class SC2InputGenerator:
 
         return grid_x, grid_y
 
-    def generate_input(self, own_units, enemy_units, unmovable_terrain, relative_center):
+    # def generate_input(self, own_units, enemy_units, unmovable_terrain, relative_center):
+    #     """Creates an input tensor with explicit one-hot encoding for terrain and units."""
+    #     C, H, W = 6, self.input_size, self.input_size  # (HP %, 4 one-hot channels, Weapon cooldown %)
+    #     input_tensor = np.zeros((C, H, W), dtype=np.float32)
+    #
+    #     # Initialize the entire battlefield as movable terrain
+    #     input_tensor[4, :, :] = 1  # Movable terrain (default)
+    #
+    #     # Encode own units
+    #     for unit in own_units:
+    #         grid_x, grid_y = self.world_to_grid(unit['x'], unit['y'], relative_center)
+    #         if 0 <= grid_x < W and 0 <= grid_y < H:
+    #             input_tensor[0, grid_y, grid_x] = unit['hp']  # HP %
+    #             input_tensor[1, grid_y, grid_x] = 1  # Own unit (one-hot)
+    #             input_tensor[4, grid_y, grid_x] = 0  # Not just movable terrain anymore
+    #             input_tensor[5, grid_y, grid_x] = unit['cooldown']  # Weapon cooldown %
+    #
+    #     # Encode enemy units
+    #     for unit in enemy_units:
+    #         grid_x, grid_y = self.world_to_grid(unit['x'], unit['y'], relative_center)
+    #         if 0 <= grid_x < W and 0 <= grid_y < H:
+    #             input_tensor[0, grid_y, grid_x] = unit['hp']  # HP %
+    #             input_tensor[2, grid_y, grid_x] = 1  # Enemy unit (one-hot)
+    #             input_tensor[4, grid_y, grid_x] = 0  # Not just movable terrain anymore
+    #             # input_tensor[5, grid_y, grid_x] = unit['cooldown']  # Weapon cooldown %
+    #
+    #     # Encode unmovable terrain
+    #     # for pos in unmovable_terrain:
+    #     #     grid_x, grid_y = self.world_to_grid(pos[0], pos[1], relative_center)
+    #     #     if 0 <= grid_x < W and 0 <= grid_y < H:
+    #     #         input_tensor[3, grid_y, grid_x] = 1  # Unmovable terrain (one-hot)
+    #     #         input_tensor[4, grid_y, grid_x] = 0  # Not movable terrain anymore
+    #
+    #     return input_tensor
+    def generate_input(self, own_units, enemy_units, relative_center):
         """Creates an input tensor with explicit one-hot encoding for terrain and units."""
         C, H, W = 6, self.input_size, self.input_size  # (HP %, 4 one-hot channels, Weapon cooldown %)
         input_tensor = np.zeros((C, H, W), dtype=np.float32)
-
-        center_x, center_y = relative_center
 
         # Initialize the entire battlefield as movable terrain
         input_tensor[4, :, :] = 1  # Movable terrain (default)
@@ -63,14 +120,25 @@ class SC2InputGenerator:
                 input_tensor[0, grid_y, grid_x] = unit['hp']  # HP %
                 input_tensor[2, grid_y, grid_x] = 1  # Enemy unit (one-hot)
                 input_tensor[4, grid_y, grid_x] = 0  # Not just movable terrain anymore
-                input_tensor[5, grid_y, grid_x] = unit['cooldown']  # Weapon cooldown %
+                # input_tensor[5, grid_y, grid_x] = unit['cooldown']  # Weapon cooldown %
 
-        # Encode unmovable terrain
-        for pos in unmovable_terrain:
-            grid_x, grid_y = self.world_to_grid(pos[0], pos[1], relative_center)
-            if 0 <= grid_x < W and 0 <= grid_y < H:
-                input_tensor[3, grid_y, grid_x] = 1  # Unmovable terrain (one-hot)
-                input_tensor[4, grid_y, grid_x] = 0  # Not movable terrain anymore
+        # Encode unmovable terrain from full_map_template
+        if self.full_map_template is None:
+            self.generate_full_map_template()
+
+        map_size = self.ai.game_info.map_size
+        width, height = map_size
+
+        # Iterate only within the relevant range of the template
+        half_H, half_W = H // 2, W // 2
+        for dx in range(-half_W, half_W):
+            for dy in range(-half_H, half_H):
+                world_x, world_y = int(relative_center[0] + dx), int(relative_center[1] + dy)  # Ensure integers
+                if 0 <= world_x < width and 0 <= world_y < height:
+                    grid_x, grid_y = self.world_to_grid(world_x, world_y, relative_center)
+                    if 0 <= grid_x < W and 0 <= grid_y < H and self.full_map_template[world_x][world_y] == 0:
+                        input_tensor[3, grid_y, grid_x] = 1  # Unmovable terrain (one-hot)
+                        input_tensor[4, grid_y, grid_x] = 0  # Not movable terrain anymore
 
         return input_tensor
 
