@@ -13,10 +13,8 @@ if __name__ == "__main__":
     agent = DDPGAgent(state_dim=env.observation_space.shape[0], action_dim=env.action_space.shape[0], batch=32)
     print(f'{agent.actor.summary()}')
     print(f'{agent.critic.summary()}')
-    # agent.load_weights('weights/Lunar-007-ep.1350')
-    # agent.load_weights('weights/Lunar-multi-005-ep.1406')
-    agent.load_weights('weights/Lunar-multi-008-w.60')
-    # agent.load_weights('weights/Lunar-multi-010-w.6 ')
+
+    agent.load_weights('weights/Lunar-multi-011-w.67')
     def train(name):
 
         time_consumed_net = 0

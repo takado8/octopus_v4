@@ -5,12 +5,12 @@ from sc2.ids.unit_typeid import UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
 
-from strategy.gate import Gate
+from strategy.ddpg_training import DDPGTraining
 from strategy.strategy import Strategy
 from utils.constants import BASES_IDS, OWN_ARMY_IDS, WORKERS_IDS
 
 
-class OctopusV4(BotAI):
+class ActorBot(BotAI):
     def __init__(self):
         super().__init__()
         self.strategy: Strategy = None
@@ -21,8 +21,7 @@ class OctopusV4(BotAI):
         self.visual = None
 
     async def on_start(self):
-        
-        self.strategy = Gate(self)
+        self.strategy = DDPGTraining(self)
 
     async def on_step(self, iteration: int):
         self.iteration = iteration

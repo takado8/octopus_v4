@@ -16,8 +16,8 @@ from utils.plotit import LivePlotter
 
 # Global parameters
 NUM_WORKERS = 150  # Number of worker threads (each with its own environment)
-NUM_EPISODES = 400  # Number of episodes per worker
-MAX_STEPS = 300  # Maximum steps per episode
+NUM_EPISODES = 600  # Number of episodes per worker
+MAX_STEPS = 500  # Maximum steps per episode
 
 # Create a global agent
 agent = DDPGAgent(state_dim=8, action_dim=2, noise_type=NOISE_ORNSTEIN)
@@ -26,9 +26,9 @@ print(f'{agent.critic.summary()}')
 
 # agent.load_weights('weights/Lunar-multi-008-w.29')
 
-name = "Lunar-multi-011"
+name = "Lunar-multi-012"
 scores = defaultdict(list)
-
+checkpoints_saved = set()
 
 class BatchedActionSelector:
     """Handles batched inference for action selection, reducing per-call overhead."""
@@ -89,8 +89,8 @@ def worker_thread(worker_id, num_episodes):
         total_reward = 0
 
         for _ in range(MAX_STEPS):
-            noise = 0.35 * (num_episodes - ep) / num_episodes + 0.05
-            if len(agent.memory) < 15_000:
+            noise = 0.65 * (num_episodes - ep) / num_episodes + 0.15
+            if len(agent.memory) < 500_000:
                 action = np.random.normal(0, 2, size=2)
             else:
                 request_id = f"{worker_id}_{unique_counter}"
@@ -106,6 +106,9 @@ def worker_thread(worker_id, num_episodes):
 
         print(f"Worker {worker_id} Episode {ep} Reward: {total_reward}")
         scores[ep].append(total_reward)
+        if ep > 50 and ep not in checkpoints_saved:
+            checkpoints_saved.add(ep)
+            agent.save_weights(f"weights/{name}-ep.{ep}")
 
     agent.save_weights(f"weights/{name}-w.{worker_id}")
     env.close()

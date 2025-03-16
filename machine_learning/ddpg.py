@@ -8,8 +8,8 @@ from collections import deque
 
 
 TRAINING_BATCH_SIZE = 64
-REPLAY_MEMORY_MIN_SIZE = 5000
-REPLAY_MEMORY_MAX_SIZE = 1000000
+REPLAY_MEMORY_MIN_SIZE = 50000
+REPLAY_MEMORY_MAX_SIZE = 50_000_000
 TAU = 0.0025
 THETA = 0.2
 MU = 0
@@ -38,9 +38,9 @@ def build_critic(state_dim, action_dim):
 
 
 def build_insides(input_layer):
-    x = Dense(256, activation="relu")(input_layer)
+    x = Dense(512, activation="relu")(input_layer)
+    x = Dense(384, activation="relu")(x)
     x = Dense(256, activation="relu")(x)
-    # x = Dense(256, activation="relu")(x)
     return x
 
 
